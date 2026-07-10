@@ -22,6 +22,11 @@
     border:1px solid rgba(255,255,255,.18);color:#cfcabe;width:34px;height:34px;border-radius:50%;
     cursor:pointer;font-size:13px;line-height:1;transition:opacity .6s,background .3s,border-color .3s}
   #fs:hover{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.34)}
+  #loader{position:absolute;top:3.2%;left:50%;transform:translateX(-50%);z-index:7;pointer-events:auto;text-align:center}
+  #filepick{display:none}
+  #loadbtn{display:inline-block;cursor:pointer;font-size:11px;letter-spacing:.26em;text-transform:uppercase;color:#0c0c0c;background:#C9A35A;padding:9px 17px;border-radius:30px;font-weight:500;box-shadow:0 4px 18px rgba(0,0,0,.45)}
+  #loadbtn:active{opacity:.85}
+  #loadnote{margin-top:7px;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:#a8a8a0}
   #prog{position:absolute;left:0;right:0;bottom:0;height:2px;background:rgba(255,255,255,.07);transition:opacity .6s}
   #progfill{height:100%;width:5.5%;background:linear-gradient(90deg,#C9A35A,#e3c486);transition:width 1.1s ease}
   #hint{position:absolute;bottom:5.4%;left:0;right:0;text-align:center;color:#9b9b94;
@@ -44,6 +49,11 @@
     <div id="chrome">
       <div id="counter"><span id="act"></span><span id="count"></span></div>
       <button id="fs" title="Fullscreen (F)">&#9974;</button>
+      <div id="loader">
+        <label id="loadbtn" for="filepick">&#9658;&nbsp; Load 18 images</label>
+        <input id="filepick" type="file" accept="image/*" multiple>
+        <div id="loadnote">pick slide-01 … slide-18 from your phone</div>
+      </div>
       <div id="arrows"><div class="ar" id="prev">&#8249;</div><div class="ar" id="next">&#8250;</div></div>
       <div id="hint">Swipe &nbsp;·&nbsp; Arrow keys &nbsp;·&nbsp; F for fullscreen</div>
       <div id="prog"><div id="progfill"></div></div>
@@ -53,11 +63,8 @@
 <script>
 /* ============================================================
    SALALAH · KHAREEF — unified film shell
-   Each slide is mounted in an isolated iframe (srcdoc) so its
-   CSS, keyframes and scripts run exactly as originally built.
    ============================================================ */
 
-/* ---- SLIDE SOURCES (verbatim designs) ---- */
 const slides = [];
 
 /* 01 — TITLE CARD */
@@ -255,7 +262,7 @@ slides[4] = `<meta charset="utf-8">
 </style>
 <div class="stage"><div class="frame">
   <div class="layer base"></div><div class="layer photo"></div>
-  <div class="layer ridges"><svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMax slice">
+  <div class="layer ridges scene"><svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMax slice">
     <path d="M0,560 L120,520 L260,545 L380,500 L520,540 L660,505 L800,548 L940,510 L1080,545 L1220,508 L1360,548 L1500,515 L1600,540 L1600,900 L0,900 Z" fill="#2a3446" opacity="0.9"/>
     <path d="M0,650 L160,600 L320,640 L470,588 L640,636 L800,592 L980,640 L1140,596 L1320,642 L1500,600 L1600,632 L1600,900 L0,900 Z" fill="#1a2230"/>
     <path d="M0,742 L200,700 L420,744 L640,694 L880,746 L1120,700 L1360,746 L1600,706 L1600,900 L0,900 Z" fill="#0c111b"/>
@@ -264,7 +271,8 @@ slides[4] = `<meta charset="utf-8">
   <div class="numeral">05</div><div class="bar top"></div><div class="bar bot"></div>
   <div class="content"><div class="kicker">Act II — The Threshold</div><div class="rule"></div><div class="title">Terrain Turns</div><div class="whisper">The flatness broke. The land began to rise — toward something we could not yet see.</div></div>
   <div class="meta"><span>Before Dawn · Southern Oman</span><span class="r">Elevation Rising</span></div>
-</div></div>`;
+</div></div>
+<script>(function(){var v=getComputedStyle(document.documentElement).getPropertyValue('--hero-image').trim();if(v&&v!=='none'){document.querySelectorAll('.scene').forEach(function(el){el.style.display='none';});}})();<\/script>`;
 
 /* 06 — MIST ON THE ROAD */
 slides[5] = `<meta charset="utf-8">
@@ -356,19 +364,20 @@ slides[6] = `<meta charset="utf-8">
 </style>
 <div class="stage"><div class="frame">
   <div class="layer base"></div><div class="layer photo"></div>
-  <div class="layer ridges"><svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMax slice">
+  <div class="layer ridges scene"><svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMax slice">
     <path d="M0,500 L180,470 L340,492 L500,452 L680,488 L860,456 L1040,490 L1220,458 L1400,492 L1600,462 L1600,900 L0,900 Z" fill="#5f8073" opacity="0.55"/>
     <path d="M0,575 L160,540 L340,572 L520,532 L700,568 L880,536 L1060,572 L1260,540 L1440,574 L1600,544 L1600,900 L0,900 Z" fill="#3c5a4f" opacity="0.9"/>
     <path d="M0,662 L200,624 L400,664 L620,618 L840,666 L1060,624 L1300,668 L1520,628 L1600,650 L1600,900 L0,900 Z" fill="#22392f"/>
     <path d="M0,752 L240,712 L480,756 L720,706 L980,758 L1240,712 L1480,758 L1600,724 L1600,900 L0,900 Z" fill="#101e18"/>
   </svg></div>
-  <div class="layer valmist1"></div><div class="layer valmist2"></div><div class="layer reveal"></div>
+  <div class="layer valmist1 scene"></div><div class="layer valmist2 scene"></div><div class="layer reveal"></div>
   <div class="layer grade"></div><div class="layer vignette"></div><div class="layer grain"></div>
   <div class="numeral">07</div><div class="bar top"></div><div class="bar bot"></div>
   <div class="kicker">Act III — The Revelation</div>
   <div class="realize"><div class="line">This Is Still Arabia.</div><div class="dash"></div></div>
   <div class="meta"><span>Dhofar · Sultanate of Oman</span><span class="r">It Was Here All Along</span></div>
-</div></div>`;
+</div></div>
+<script>(function(){var v=getComputedStyle(document.documentElement).getPropertyValue('--hero-image').trim();if(v&&v!=='none'){document.querySelectorAll('.scene').forEach(function(el){el.style.display='none';});}})();<\/script>`;
 
 /* 08 — WATERFALLS */
 slides[7] = `<meta charset="utf-8">
@@ -981,47 +990,53 @@ slides[17] = `<meta charset="utf-8">
   <div class="sign"><span class="b">Mondial Travels</span></div>
 </div></div>`;
 
-/* ============================================================
-   HERO IMAGES — manage ALL 18 slides from this one list.
-   Paste a direct image URL (ending .jpg / .webp) between the
-   quotes. Leave '' empty to keep that slide's cinematic CSS art.
-   Specs: 16:9, high-res (2560x1440+), hosted at a public URL.
-   ============================================================ */
-const heroes = [
-  '', // 01 Title        — green misted mountains, monsoon
-  '', // 02 Departure    — golden UAE desert at dawn, coach
-  '', // 03 Road South   — long highway, vast arid, vanishing point
-  '', // 04 Border       — night crossing, sodium lights, blue-black
-  '', // 05 Terrain Turns— rugged climbing road, cold pre-dawn
-  '', // 06 Mist         — road into thick fog, headlights
-  '', // 07 Reveal       — emerald valley, cloud in valleys, waterfall
-  '', // 08 Waterfalls   — Wadi Darbat scale, mist plume
-  '', // 09 Cloud        — cloud streaming between green ridges
-  '', // 10 Emerald Mtns — sweeping Jebel Samhan, tiny road for scale
-  '', // 11 Coast        — Mughsail cliffs, crashing surf, mist
-  '', // 12 Villages     — Jebali highland homes, dusk, smoke
-  '', // 13 Coconut      — dense grove, dappled light, fronds
-  '', // 14 Frankincense — gnarled Boswellia, resin, warm light
-  '', // 15 Ancient Coast— Khor Rori, dhow / harbour, gold dusk
-  '', // 16 Summit       — panorama, huge sky, ridges below
-  '', // 17 Road Home    — golden dusk road, green fading
-  ''  // 18 Realization  — quiet green-misted frame (optional)
+/* ── HOST: images live at the repo root as N.png ── */
+const HOST = 'https://aslam267.github.io/salalahbus/';
+const SLIDE_BASE = slides.slice();
+
+const FILES = [
+  '1.png','6.png','13.png','18.png','12.png','14.png','3.png','16.png','17.png',
+  '4.png','15.png','9.png','7.png','8.png','2.png','11.png','5.png','10.png'
 ];
 
-/* Make Slides 05 & 07 behave like the rest: tag their drawn
-   scenery with .scene and give them the same auto-hide script,
-   so a real photo lands clean under the grade. (No design change —
-   only adds the hide-on-photo behavior the other slides already have.) */
 [4,6].forEach(function(i){
   slides[i] = slides[i]
     .replace('class="layer ridges"','class="layer ridges scene"')
     .replace('class="layer valmist1"','class="layer valmist1 scene"')
     .replace('class="layer valmist2"','class="layer valmist2 scene"');
-  slides[i] += "<script>(function(){var v=getComputedStyle(document.documentElement).getPropertyValue('--hero-image').trim();if(v&&v!=='none'){document.querySelectorAll('.scene').forEach(function(el){el.style.display='none';});}})();<\/script>";
 });
 
-/* Inject the hero photography into the image slots. */
-heroes.forEach(function(u,i){ if(u) slides[i] = slides[i].replace('--hero-image:none', "--hero-image:url('"+u+"')"); });
+function applyImages(urls){
+  for(var i=0;i<18;i++){
+    slides[i] = urls[i]
+      ? SLIDE_BASE[i].replace('--hero-image:none', "--hero-image:url('"+urls[i]+"')")
+      : SLIDE_BASE[i];
+  }
+  if(typeof frontEl!=='undefined' && frontEl){ frontEl.srcdoc = slides[cur]; }
+}
+
+function initImages(){
+  if(HOST){ applyImages(FILES.map(function(f){ return HOST + f; })); setLoaderState('done'); return; }
+  var probe=new Image();
+  probe.onload=function(){ applyImages(FILES.map(function(f){ return new URL(f, document.baseURI).href; })); setLoaderState('done'); };
+  probe.onerror=function(){};
+  probe.src=new URL(FILES[0], document.baseURI).href;
+  if(fileInput){
+    fileInput.addEventListener('change', function(e){
+      var files=Array.prototype.slice.call(e.target.files||[]);
+      if(!files.length) return;
+      files.sort(function(a,b){ return a.name.localeCompare(b.name, undefined, {numeric:true}); });
+      files=files.slice(0,18);
+      setLoaderState('loading');
+      var urls=new Array(18), done=0, need=files.length;
+      files.forEach(function(file, idx){
+        var r=new FileReader();
+        r.onloadend=function(){ urls[idx]=r.result||''; if(++done===need){ applyImages(urls); setLoaderState('done'); } };
+        r.readAsDataURL(file);
+      });
+    });
+  }
+}
 
 /* ---- ACT MAP ---- */
 const acts = [
@@ -1033,7 +1048,6 @@ const acts = [
 ];
 function actIndexOf(i){ for(let a=0;a<acts.length;a++){ if(i>=acts[a].from && i<=acts[a].to) return a; } return 0; }
 
-/* ---- SHELL STATE ---- */
 const fa=document.getElementById('fa'), fb=document.getElementById('fb');
 const counter=document.getElementById('count'), actLbl=document.getElementById('act');
 const progfill=document.getElementById('progfill'), hint=document.getElementById('hint');
@@ -1047,7 +1061,6 @@ function updateChrome(){
   if(cur>0) hint.classList.add('gone');
 }
 
-/* initial mount */
 fa.srcdoc = slides[0];
 fa.style.opacity = 1;
 updateChrome();
@@ -1070,7 +1083,7 @@ function show(target){
       void backEl.offsetWidth;
       backEl.style.transition='opacity .9s ease';
       backEl.style.opacity = 1;
-    }, 1050); /* fade out 800 + black hold 250 */
+    }, 1050);
     total = 1050 + 900;
   } else {
     backEl.srcdoc = slides[target];
@@ -1088,7 +1101,7 @@ function show(target){
   updateChrome();
 
   setTimeout(function(){
-    oldFront.srcdoc = '';            /* unmount to stop its animations */
+    oldFront.srcdoc = '';
     const t=frontEl; frontEl=backEl; backEl=t;
     busy = false;
   }, total + 80);
@@ -1096,7 +1109,6 @@ function show(target){
 function next(){ show(cur+1); }
 function prev(){ show(cur-1); }
 
-/* ---- keyboard ---- */
 window.addEventListener('keydown', function(e){
   switch(e.key){
     case 'ArrowRight': case 'ArrowDown': case 'PageDown': case ' ': case 'Spacebar':
@@ -1109,7 +1121,6 @@ window.addEventListener('keydown', function(e){
   }
 });
 
-/* ---- tap + swipe ---- */
 const nav=document.getElementById('nav');
 let tsx=0, tsy=0, tst=0, moved=false;
 nav.addEventListener('touchstart', function(e){
@@ -1124,7 +1135,6 @@ nav.addEventListener('touchend', function(e){
 nav.addEventListener('click', function(e){ tapZone(e.clientX); });
 function tapZone(x){ (x < window.innerWidth*0.32) ? prev() : next(); }
 
-/* ---- wheel (desktop) ---- */
 let wheelLock=false;
 window.addEventListener('wheel', function(e){
   if(wheelLock || Math.abs(e.deltaY)<18) return;
@@ -1132,7 +1142,6 @@ window.addEventListener('wheel', function(e){
   setTimeout(function(){ wheelLock=false; }, 900);
 }, {passive:true});
 
-/* ---- arrows + fullscreen buttons ---- */
 document.getElementById('next').addEventListener('click', function(e){ e.stopPropagation(); next(); });
 document.getElementById('prev').addEventListener('click', function(e){ e.stopPropagation(); prev(); });
 const deck=document.getElementById('deck');
@@ -1143,7 +1152,6 @@ function toggleFS(){
 }
 document.getElementById('fs').addEventListener('click', function(e){ e.stopPropagation(); toggleFS(); });
 
-/* ---- idle chrome auto-hide ---- */
 let idleT;
 function activity(){
   document.body.classList.remove('idle');
@@ -1154,6 +1162,15 @@ function activity(){
   window.addEventListener(ev, activity, {passive:true});
 });
 activity();
+
+var fileInput = document.getElementById('filepick');
+function setLoaderState(s){
+  var L=document.getElementById('loader'), b=document.getElementById('loadbtn');
+  if(!L) return;
+  if(s==='loading'){ b.textContent='Loading…'; }
+  else if(s==='done'){ L.style.display='none'; }
+}
+initImages();
 </script>
 </body>
 </html>
